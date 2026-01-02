@@ -16,11 +16,13 @@ st.title("PageSpeed Insights Dashboard")
 pagespeed_key = os.environ.get("PAGESPEED_API_KEY", "")
 
 # URL input and Analyse button under the title (no sidebar)
-input_col, button_col = st.columns([4, 1])
-with input_col:
-    site_url = st.text_input("Website URL", value=os.environ.get("SITE_URL", "https://allelitecfc.com/"))
-with button_col:
-    analyse = st.button("Analyse")
+# use a form with two columns so the Analyse button is vertically centered with the input
+with st.form("analyse_form"):
+    cols = st.columns([10, 1])
+    with cols[0]:
+        site_url = st.text_input("Website URL", value=os.environ.get("SITE_URL", "https://allelitecfc.com/"))
+    with cols[1]:
+        analyse = st.form_submit_button("Analyse")
 
 
 def normalize_score(s):
