@@ -22,6 +22,8 @@ with st.form("analyse_form"):
     with cols[0]:
         site_url = st.text_input("Website URL", value=os.environ.get("SITE_URL", "https://allelitecfc.com/"))
     with cols[1]:
+        # Add vertical spacing to center the button
+        st.markdown("<div style='height: 2.2em'></div>", unsafe_allow_html=True)
         analyse = st.form_submit_button("Analyse")
 
 
