@@ -1,43 +1,63 @@
 <<<<<<< HEAD
-# PageSpeed-dashboard
-Google Page Speed
-=======
-GA Dashboard
-============
+PageSpeed Insights Dashboard
+===========================
 
-A small Streamlit dashboard that fetches metrics from Google Analytics 4 (GA4), Google Search Console, and PageSpeed Insights.
+This Streamlit app runs PageSpeed Insights (mobile & desktop) for a given URL and shows a clean comparison of key metrics, performance scores, and actionable opportunities/diagnostics.
 
-Requirements
-------------
-- Create a Google Cloud service account with the following APIs enabled in the project:
-  - Analytics Data API (for GA4)
-  - Search Console API
-  - (Optional) Enable PageSpeed API or use an API key
-- Download the service account JSON and set `SERVICE_ACCOUNT_FILE` env var or place file path in `.env`.
-
-Quick setup
------------
+Quick Start (local)
+-------------------
 1. Create a virtual environment and install dependencies:
 
-```bash
+```powershell
 python -m venv .venv
 .\.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-2. Create a `.env` file from `.env.example` and update values.
+2. Provide your PageSpeed API key (optional but recommended):
 
-3. Grant the service account access to:
-   - Your Google Analytics 4 property (add as Viewer/Analyst) and
-   - Your Search Console site (add service account email as owner or verified user)
+- Create a `.env` file in the project root with:
 
-4. Run the dashboard:
+```
+PAGESPEED_API_KEY=YOUR_API_KEY_HERE
+SITE_URL=https://example.com
+```
 
-```bash
+- Or set the env var in PowerShell for the session:
+
+```powershell
+$env:PAGESPEED_API_KEY="YOUR_API_KEY_HERE"
+```
+
+3. Run the app:
+
+```powershell
+cd ga_dashboard
+.\.venv\Scripts\activate
 streamlit run app.py
 ```
 
+4. Open http://localhost:8501 in your browser.
+
 Notes
+-----
+- The app is focused on PageSpeed Insights only (GA4 and Search Console integrations were removed).
+- Keep `.env` and `service-account.json` out of source control; `.gitignore` already excludes them.
+
+Deploying to Streamlit Cloud
+----------------------------
+1. Push this repo to GitHub.
+2. In Streamlit Community Cloud (share.streamlit.io) create a new app pointing to this repo and `app.py`.
+3. In the app's Settings → Secrets, add the following keys (replace values):
+
+```
+PAGESPEED_API_KEY="YOUR_API_KEY_HERE"
+SITE_URL="https://example.com"
+```
+
+Secrets added in Streamlit are exposed as environment variables; no further code changes are required.
+
+Want help pushing this repo to GitHub or configuring Streamlit Secrets? Open a prompt and I can do it for you.
 -----
 - This is a starter project. You may need to adjust metrics/requests to match your GA4 schema and property setup.
 - PageSpeed Insights uses `PAGESPEED_API_KEY` or can be called without key for some public endpoints.
