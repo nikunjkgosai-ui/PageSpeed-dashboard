@@ -20,16 +20,31 @@ st.markdown(
 :root {
   --cwv-bg: #f8fbff;
   --cwv-bg-accent: #fef5ec;
+  --cwv-card: #ffffff;
   --cwv-card-border: #e4e9f1;
   --cwv-text: #0f172a;
   --cwv-muted: #6b7280;
   --cwv-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  --cwv-icon: #475569;
 }
 
 .stApp {
-  background: radial-gradient(1100px 520px at 8% -8%, var(--cwv-bg-accent) 0%, var(--cwv-bg) 35%, #ffffff 70%);
+  background: radial-gradient(1100px 520px at 8% -8%, var(--cwv-bg-accent) 0%, var(--cwv-bg) 35%, var(--cwv-card) 70%);
   color: var(--cwv-text);
   font-family: "Space Grotesk", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cwv-bg: #0f172a;
+    --cwv-bg-accent: #1e293b;
+    --cwv-card: #111827;
+    --cwv-card-border: #243244;
+    --cwv-text: #f8fafc;
+    --cwv-muted: #94a3b8;
+    --cwv-shadow: 0 12px 28px rgba(15, 23, 42, 0.4);
+    --cwv-icon: #cbd5f5;
+  }
 }
 
 .cwv-section {
@@ -66,7 +81,7 @@ st.markdown(
 }
 
 .cwv-card {
-  background: #ffffff;
+  background: var(--cwv-card);
   border: 1px solid var(--cwv-card-border);
   border-radius: 18px;
   padding: 22px 22px 18px;
@@ -77,7 +92,7 @@ st.markdown(
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #475569;
+  color: var(--cwv-icon);
   font-weight: 600;
   font-size: 0.95rem;
 }
@@ -85,14 +100,14 @@ st.markdown(
 .cwv-icon {
   width: 22px;
   height: 22px;
-  stroke: #475569;
+  stroke: var(--cwv-icon);
 }
 
 .cwv-value {
   margin-top: 10px;
   font-size: 1.7rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--cwv-text);
 }
 
 .cwv-subtitle {
