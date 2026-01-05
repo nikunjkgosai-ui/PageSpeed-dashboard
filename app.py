@@ -12,6 +12,99 @@ st.set_page_config(page_title="PageSpeed Dashboard", layout="wide")
 
 st.title("PageSpeed Insights Dashboard")
 
+st.markdown(
+    """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  --cwv-bg: #f8fbff;
+  --cwv-bg-accent: #fef5ec;
+  --cwv-card-border: #e4e9f1;
+  --cwv-text: #0f172a;
+  --cwv-muted: #6b7280;
+  --cwv-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.stApp {
+  background: radial-gradient(1100px 520px at 8% -8%, var(--cwv-bg-accent) 0%, var(--cwv-bg) 35%, #ffffff 70%);
+  color: var(--cwv-text);
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.cwv-section {
+  margin-top: 6px;
+  margin-bottom: 8px;
+}
+
+.cwv-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--cwv-text);
+}
+
+.cwv-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+@media (max-width: 1200px) {
+  .cwv-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .cwv-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cwv-card {
+  background: #ffffff;
+  border: 1px solid var(--cwv-card-border);
+  border-radius: 18px;
+  padding: 22px 22px 18px;
+  box-shadow: var(--cwv-shadow);
+}
+
+.cwv-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.cwv-icon {
+  width: 22px;
+  height: 22px;
+  stroke: #475569;
+}
+
+.cwv-value {
+  margin-top: 10px;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.cwv-subtitle {
+  margin-top: 6px;
+  font-size: 0.86rem;
+  color: var(--cwv-muted);
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
 # Use API key from environment; do not expose it in the frontend
 pagespeed_key = os.environ.get("PAGESPEED_API_KEY", "")
 
@@ -69,6 +162,100 @@ def show_results(mobile, desktop):
     delta = None
     if m_score is not None and d_score is not None:
         delta = d_score - m_score
+
+    def fmt_metric(metrics, key):
+        val = metrics.get(key, {})
+        numeric = val.get("numeric_ms") if isinstance(val, dict) else None
+        display = val.get("display") if isinstance(val, dict) else val
+        if numeric is not None:
+            if numeric >= 1000:
+                return f"{numeric / 1000:.2f} s"
+            return f"{int(round(numeric))} ms"
+        if display:
+            return str(display)
+        return "N/A"
+
+    cwv_icons = {
+        "clock": """
+<svg class="cwv-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <circle cx="12" cy="12" r="9"></circle>
+  <path d="M12 7v5l3 2"></path>
+</svg>
+""",
+        "bolt": """
+<svg class="cwv-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M13 2L3 14h7l-1 8 12-14h-7l-1-6z"></path>
+</svg>
+""",
+        "grid": """
+<svg class="cwv-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+  <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+  <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+  <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+</svg>
+""",
+        "pulse": """
+<svg class="cwv-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M3 12h4l2-5 4 10 2-5h6"></path>
+</svg>
+""",
+    }
+
+    cards = [
+        {
+            "label": "First Contentful Paint",
+            "value": fmt_metric(mobile.get("metrics", {}), "first-contentful-paint"),
+            "subtitle": "Time until first content appears",
+            "icon": cwv_icons["clock"],
+        },
+        {
+            "label": "Largest Contentful Paint",
+            "value": fmt_metric(mobile.get("metrics", {}), "largest-contentful-paint"),
+            "subtitle": "Time until main content loads",
+            "icon": cwv_icons["bolt"],
+        },
+        {
+            "label": "Cumulative Layout Shift",
+            "value": fmt_metric(mobile.get("metrics", {}), "cumulative-layout-shift"),
+            "subtitle": "Visual stability score",
+            "icon": cwv_icons["grid"],
+        },
+        {
+            "label": "Speed Index",
+            "value": fmt_metric(mobile.get("metrics", {}), "speed-index"),
+            "subtitle": "How quickly content is displayed",
+            "icon": cwv_icons["pulse"],
+        },
+    ]
+
+    cards_html = "\n".join(
+        [
+            f"""
+<div class="cwv-card">
+  <div class="cwv-card-header">{card["icon"]}<span>{card["label"]}</span></div>
+  <div class="cwv-value">{card["value"]}</div>
+  <div class="cwv-subtitle">{card["subtitle"]}</div>
+</div>
+"""
+            for card in cards
+        ]
+    )
+
+    st.markdown(
+        f"""
+<section class="cwv-section">
+  <div class="cwv-title">
+    <span>{cwv_icons["pulse"]}</span>
+    <span>Core Web Vitals & Metrics</span>
+  </div>
+  <div class="cwv-grid">
+    {cards_html}
+  </div>
+</section>
+""",
+        unsafe_allow_html=True,
+    )
 
     st.subheader("Performance Scores")
     c1, c2, c3 = st.columns(3)
