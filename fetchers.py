@@ -25,7 +25,14 @@ def fetch_pagespeed(url, api_key=None, strategy="mobile", cache_bust=False):
         perf_score = categories["performance"].get("score")
     metrics = {}
     # keys we care about and friendly labels
-    keys = ["first-contentful-paint", "largest-contentful-paint", "speed-index", "total-blocking-time", "interactive"]
+    keys = [
+        "first-contentful-paint",
+        "largest-contentful-paint",
+        "cumulative-layout-shift",
+        "speed-index",
+        "total-blocking-time",
+        "interactive",
+    ]
     for key in keys:
         if key in audits:
             audit = audits[key]
