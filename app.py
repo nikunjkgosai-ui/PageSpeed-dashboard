@@ -11,28 +11,15 @@ st.set_page_config(page_title="PageSpeed Dashboard", layout="wide")
 
 st.title("PageSpeed Insights Dashboard")
 
-# Detect theme from Streamlit config
-is_dark_theme = st.get_option("theme.base") == "dark"
-
-# Define colors based on theme
-if is_dark_theme:
-    cwv_bg = "#0f172a"
-    cwv_bg_accent = "#1e293b"
-    cwv_card = "#111827"
-    cwv_card_border = "#243244"
-    cwv_text = "#f8fafc"
-    cwv_muted = "#94a3b8"
-    cwv_shadow = "0 12px 28px rgba(15, 23, 42, 0.4)"
-    cwv_icon = "#cbd5f5"
-else:
-    cwv_bg = "#f8fbff"
-    cwv_bg_accent = "#fef5ec"
-    cwv_card = "#ffffff"
-    cwv_card_border = "#e4e9f1"
-    cwv_text = "#0f172a"
-    cwv_muted = "#6b7280"
-    cwv_shadow = "0 12px 24px rgba(15, 23, 42, 0.08)"
-    cwv_icon = "#475569"
+# Dark theme colors (default)
+cwv_bg = "#0f172a"
+cwv_bg_accent = "#1e293b"
+cwv_card = "#111827"
+cwv_card_border = "#243244"
+cwv_text = "#f8fafc"
+cwv_muted = "#94a3b8"
+cwv_shadow = "0 12px 28px rgba(15, 23, 42, 0.4)"
+cwv_icon = "#cbd5f5"
 
 st.markdown(
     f"""
@@ -296,6 +283,10 @@ def show_results(mobile, desktop):
             unsafe_allow_html=True,
         )
 
+        st.markdown("""
+    <div style="border-left: 2px solid var(--cwv-card-border); height: auto; margin: 0 20px;"></div>
+    """, unsafe_allow_html=True)
+
     with col_d:
         st.markdown("**Desktop Metrics**")
         desktop_cards = []
@@ -326,39 +317,6 @@ def show_results(mobile, desktop):
 """,
             unsafe_allow_html=True,
         )
-
-    st.markdown("---")
-    st.subheader("Key Metrics")
-    # display each metric in clean boxes for mobile and desktop
-    keys = sorted(set(list(mobile.get("metrics", {}).keys()) + list(desktop.get("metrics", {}).keys())))
-    for key in keys:
-        label = key.replace("-", " ").title()
-        m_val = mobile.get("metrics", {}).get(key, {})
-        d_val = desktop.get("metrics", {}).get(key, {})
-        m_num = m_val.get("numeric_ms") if isinstance(m_val, dict) else None
-        d_num = d_val.get("numeric_ms") if isinstance(d_val, dict) else None
-        m_disp = m_val.get("display") if isinstance(m_val, dict) else m_val
-        d_disp = d_val.get("display") if isinstance(d_val, dict) else d_val
-
-        # format numbers: show ms as '1234 ms' or if None show display or 'N/A'
-        def fmt(numeric, display):
-            if numeric is not None:
-                # show seconds if >1000ms
-                if numeric >= 1000:
-                    return f"{numeric/1000:.2f} s"
-                else:
-                    return f"{int(round(numeric))} ms"
-            if display:
-                return display
-            return "N/A"
-
-        col_label, col_m, col_d = st.columns([1, 1, 1])
-        with col_label:
-            st.write(f"**{label}**")
-        with col_m:
-            st.metric("Mobile", fmt(m_num, m_disp))
-        with col_d:
-            st.metric("Desktop", fmt(d_num, d_disp))
 
     # Insights: Opportunities and Diagnostics
     st.markdown("---")
