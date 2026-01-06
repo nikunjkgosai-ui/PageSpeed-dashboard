@@ -6,7 +6,6 @@ import pandas as pd
 
 load_dotenv()
 from fetchers import fetch_pagespeed
-import numpy as np
 
 st.set_page_config(page_title="PageSpeed Dashboard", layout="wide")
 
@@ -157,7 +156,6 @@ def build_comparison_table(mobile, desktop):
         mv = mobile.get("metrics", {}).get(k)
         dv = desktop.get("metrics", {}).get(k)
         rows.append({"metric": k, "mobile": mv, "desktop": dv})
-    import pandas as pd
     df = pd.DataFrame(rows)
     return df
 
@@ -275,7 +273,7 @@ def show_results(mobile, desktop):
     st.subheader("Performance Scores")
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.metric("Mobile Performance", f"{m_score if m_score is not None else 'N/A'}", delta=f"{(d_score-m_score) if delta is not None else ''}")
+        st.metric("Mobile Performance", f"{m_score if m_score is not None else 'N/A'}", delta=(round(delta, 1) if delta is not None else None))
         st.caption(f"raw: {raw_m}")
     with c2:
         st.metric("Desktop Performance", f"{d_score if d_score is not None else 'N/A'}")
