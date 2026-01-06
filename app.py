@@ -11,15 +11,27 @@ st.set_page_config(page_title="PageSpeed Dashboard", layout="wide")
 
 st.title("PageSpeed Insights Dashboard")
 
-# Dark theme colors (default)
-cwv_bg = "#0f172a"
-cwv_bg_accent = "#1e293b"
-cwv_card = "#111827"
-cwv_card_border = "#243244"
-cwv_text = "#f8fafc"
-cwv_muted = "#94a3b8"
-cwv_shadow = "0 12px 28px rgba(15, 23, 42, 0.4)"
-cwv_icon = "#cbd5f5"
+# Respect Streamlit theme when available
+theme_base = st.get_option("theme.base") or "dark"
+is_dark_theme = theme_base == "dark"
+if is_dark_theme:
+    cwv_bg = "#0f172a"
+    cwv_bg_accent = "#1e293b"
+    cwv_card = "#111827"
+    cwv_card_border = "#243244"
+    cwv_text = "#f8fafc"
+    cwv_muted = "#94a3b8"
+    cwv_shadow = "0 12px 28px rgba(15, 23, 42, 0.4)"
+    cwv_icon = "#cbd5f5"
+else:
+    cwv_bg = "#f8fbff"
+    cwv_bg_accent = "#fef5ec"
+    cwv_card = "#ffffff"
+    cwv_card_border = "#e4e9f1"
+    cwv_text = "#0f172a"
+    cwv_muted = "#6b7280"
+    cwv_shadow = "0 12px 24px rgba(15, 23, 42, 0.08)"
+    cwv_icon = "#475569"
 
 st.markdown(
     f"""
