@@ -215,61 +215,7 @@ def show_results(mobile, desktop):
 """,
     }
 
-    cards = [
-        {
-            "label": "First Contentful Paint",
-            "value": fmt_metric(mobile.get("metrics", {}), "first-contentful-paint"),
-            "subtitle": "Time until first content appears",
-            "icon": cwv_icons["clock"],
-        },
-        {
-            "label": "Largest Contentful Paint",
-            "value": fmt_metric(mobile.get("metrics", {}), "largest-contentful-paint"),
-            "subtitle": "Time until main content loads",
-            "icon": cwv_icons["bolt"],
-        },
-        {
-            "label": "Cumulative Layout Shift",
-            "value": fmt_metric(mobile.get("metrics", {}), "cumulative-layout-shift"),
-            "subtitle": "Visual stability score",
-            "icon": cwv_icons["grid"],
-        },
-        {
-            "label": "Speed Index",
-            "value": fmt_metric(mobile.get("metrics", {}), "speed-index"),
-            "subtitle": "How quickly content is displayed",
-            "icon": cwv_icons["pulse"],
-        },
-    ]
-
-    cards_html = "\n".join(
-        [
-            f"""
-<div class="cwv-card">
-  <div class="cwv-card-header">{card["icon"]}<span>{card["label"]}</span></div>
-  <div class="cwv-value">{card["value"]}</div>
-  <div class="cwv-subtitle">{card["subtitle"]}</div>
-</div>
-"""
-            for card in cards
-        ]
-    )
-
-    st.markdown(
-        f"""
-<section class="cwv-section">
-  <div class="cwv-title">
-    <span>{cwv_icons["pulse"]}</span>
-    <span>Core Web Vitals & Metrics</span>
-  </div>
-  <div class="cwv-grid">
-    {cards_html}
-  </div>
-</section>
-""",
-        unsafe_allow_html=True,
-    )
-
+    # Show Performance Scores first
     st.subheader("Performance Scores")
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -283,6 +229,93 @@ def show_results(mobile, desktop):
             st.write(f"Desktop − Mobile = {delta:+.1f}")
         else:
             st.write("")
+
+    st.markdown("---")
+
+    # Core Web Vitals & Metrics split 50/50 between Mobile and Desktop
+    metric_keys = [
+        ("first-contentful-paint", "First Contentful Paint", "Time until first content appears", cwv_icons["clock"]),
+        ("largest-contentful-paint", "Largest Contentful Paint", "Time until main content loads", cwv_icons["bolt"]),
+        ("cumulative-layout-shift", "Cumulative Layout Shift", "Visual stability score", cwv_icons["grid"]),
+        ("speed-index", "Speed Index", "How quickly content is displayed", cwv_icons["pulse"]),
+    ]
+
+    st.markdown(
+        f"""
+<section class="cwv-section">
+  <div class="cwv-title">
+    <span>{cwv_icons["pulse"]}</span>
+    <span>Core Web Vitals & Metrics</span>
+  </div>
+</section>
+""",
+        unsafe_allow_html=True,
+    )
+
+    # Display metrics in two columns: Mobile and Desktop
+    col_m, col_d = st.columns(2)
+
+    with col_m:
+        st.markdown("**Mobile Metrics**")
+        mobile_cards = []
+        for key, label, subtitle, icon in metric_keys:
+            mobile_cards.append({
+                "label": label,
+                "value": fmt_metric(mobile.get("metrics", {}), key),
+                "subtitle": subtitle,
+                "icon": icon,
+            })
+        mobile_cards_html = "\n".join(
+            [
+                f"""
+<div class="cwv-card">
+  <div class="cwv-card-header">{card["icon"]}<span>{card["label"]}</span></div>
+  <div class="cwv-value">{card["value"]}</div>
+  <div class="cwv-subtitle">{card["subtitle"]}</div>
+</div>
+"""
+                for card in mobile_cards
+            ]
+        )
+        st.markdown(
+            f"""
+<div class="cwv-grid" style="grid-template-columns: 1fr;">
+  {mobile_cards_html}
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+
+    with col_d:
+        st.markdown("**Desktop Metrics**")
+        desktop_cards = []
+        for key, label, subtitle, icon in metric_keys:
+            desktop_cards.append({
+                "label": label,
+                "value": fmt_metric(desktop.get("metrics", {}), key),
+                "subtitle": subtitle,
+                "icon": icon,
+            })
+        desktop_cards_html = "\n".join(
+            [
+                f"""
+<div class="cwv-card">
+  <div class="cwv-card-header">{card["icon"]}<span>{card["label"]}</span></div>
+  <div class="cwv-value">{card["value"]}</div>
+  <div class="cwv-subtitle">{card["subtitle"]}</div>
+</div>
+"""
+                for card in desktop_cards
+            ]
+        )
+        st.markdown(
+            f"""
+<div class="cwv-grid" style="grid-template-columns: 1fr;">
+  {desktop_cards_html}
+</div>
+""",
+            unsafe_allow_html=True,
+        )
 
     st.markdown("---")
     st.subheader("Key Metrics")
