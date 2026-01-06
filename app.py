@@ -261,10 +261,10 @@ def show_results(mobile, desktop):
         unsafe_allow_html=True,
     )
 
-    # Display metrics in two columns: Mobile and Desktop
-    col_m, col_d = st.columns(2)
+    # Display metrics with a vertical divider between Mobile and Desktop
+    left_col, divider_col, right_col = st.columns([6, 1, 6])
 
-    with col_m:
+    with left_col:
         st.markdown("**Mobile Metrics**")
         mobile_cards = []
         for key, label, subtitle, icon in metric_keys:
@@ -288,18 +288,22 @@ def show_results(mobile, desktop):
         )
         st.markdown(
             f"""
-<div class="cwv-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+<div class="cwv-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr)); gap:18px;">
   {mobile_cards_html}
 </div>
 """,
             unsafe_allow_html=True,
         )
 
-        st.markdown("""
-    <div style="border-left: 2px solid var(--cwv-card-border); height: auto; margin: 0 20px;"></div>
-    """, unsafe_allow_html=True)
+    with divider_col:
+        st.markdown(
+            """
+<div style="height:100%; min-height:260px; border-left: 1px solid var(--cwv-card-border); margin: 8px 0;"></div>
+""",
+            unsafe_allow_html=True,
+        )
 
-    with col_d:
+    with right_col:
         st.markdown("**Desktop Metrics**")
         desktop_cards = []
         for key, label, subtitle, icon in metric_keys:
@@ -323,7 +327,7 @@ def show_results(mobile, desktop):
         )
         st.markdown(
             f"""
-<div class="cwv-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+<div class="cwv-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr)); gap:18px;">
   {desktop_cards_html}
 </div>
 """,
