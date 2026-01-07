@@ -123,6 +123,73 @@ st.markdown(
   font-size: 0.86rem;
   color: var(--cwv-muted);
 }}
+
+.score-grid {{
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}}
+
+.score-card {{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 180px;
+}}
+
+.score-label {{
+  font-weight: 600;
+  color: var(--cwv-text);
+}}
+
+.score-ring {{
+  --ring-size: 140px;
+  width: var(--ring-size);
+  height: var(--ring-size);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(var(--score-color) calc(var(--score) * 1%), var(--cwv-card-border) 0);
+  box-shadow: var(--cwv-shadow);
+  animation: score-fill 900ms ease forwards;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}}
+
+.score-ring:hover {{
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.22);
+}}
+
+.score-inner {{
+  width: calc(var(--ring-size) - 22px);
+  height: calc(var(--ring-size) - 22px);
+  border-radius: 50%;
+  background: var(--cwv-card);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--cwv-card-border);
+}}
+
+.score-value {{
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: var(--cwv-text);
+}}
+
+@property --score {{
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}}
+
+@keyframes score-fill {{
+  to {{
+    --score: var(--score-final);
+  }}
+}}
 </style>
 """,
     unsafe_allow_html=True,
@@ -226,18 +293,43 @@ def show_results(mobile, desktop):
 
     # Show Performance Scores first
     st.subheader("Performance Scores")
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.metric("Mobile Performance", f"{m_score if m_score is not None else 'N/A'}", delta=(round(delta, 1) if delta is not None else None))
-        st.caption(f"raw: {raw_m}")
-    with c2:
-        st.metric("Desktop Performance", f"{d_score if d_score is not None else 'N/A'}")
-        st.caption(f"raw: {raw_d}")
-    with c3:
-        if delta is not None:
-            st.write(f"Desktop − Mobile = {delta:+.1f}")
-        else:
-            st.write("")
+
+    def score_color(score):
+        if score is None:
+            return "#94a3b8"
+        if score >= 90:
+            return "#22c55e"
+        if score >= 50:
+            return "#f59e0b"
+        return "#ef4444"
+
+    score_cards = [
+        ("Mobile Performance", m_score),
+        ("Desktop Performance", d_score),
+    ]
+    scores_html = "\n".join(
+        [
+            f"""
+<div class="score-card">
+  <div class="score-label">{label}</div>
+  <div class="score-ring" style="--score-final: {score or 0}; --score-color: {score_color(score)};">
+    <div class="score-inner">
+      <div class="score-value">{int(round(score)) if score is not None else "N/A"}</div>
+    </div>
+  </div>
+</div>
+"""
+            for label, score in score_cards
+        ]
+    )
+    st.markdown(
+        f"""
+<div class="score-grid">
+  {scores_html}
+</div>
+""",
+        unsafe_allow_html=True,
+    )
 
     st.markdown("---")
 
